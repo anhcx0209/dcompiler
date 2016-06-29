@@ -306,7 +306,7 @@ FS				(f|F|L)
 \"							{ BEGIN string; strbuf = NULL; }
 <string>[^\\"\n]*			{ appendString(yytext); }
 <string>\\n					{ appendChar('\n'); }
-<string>\n					{ ++line_number; appendChar('\n'); }
+<string>\n					{ ++line_number; }
 <string>\\t					{ appendChar('\t'); }
 <string>\\[^nt]				{ appendChar(yytext[1]); }
 <string>\"					{ printf("Found string: %s\n", strbuf); BEGIN 0; yylval.strval = strbuf; return STRINGVAL; }
@@ -314,7 +314,7 @@ FS				(f|F|L)
 [ \t\r\f]					{ /* white space do nothing */ }
 \n							{ ++line_number; }
 
-.							{ /* ignore bac characters */ }
+.							{ /* ignore bad characters */ }
 	
 %%
 
