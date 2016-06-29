@@ -321,13 +321,15 @@ int main(int argc, char *argv[])
 {
 	yyin=fopen("01.d","r");
 
-	// scanner
+	// scanner	
+	printf("Compiling...\n");
 	log_file = fopen("d.log", "w");
 	yyparse();
 
-	//printTree();
+	printTree();
     //yylex();    
 
+	printf("Compiling successfully...\n");
 	fclose(log_file);
     return 0;
 }
