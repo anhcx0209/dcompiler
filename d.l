@@ -1,7 +1,5 @@
 %{
 #include "tree_struct.h"
-#include "semantic.h"
-#include "bytecode.h"
 #include "d.tab.h"
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +10,7 @@ extern int yyparse(void);
 	
 char * strbuf;
 int line_number = 1;
+FILE *log_file;
 
 int getInt(char *);
 float getFloat(char *);
@@ -36,269 +35,269 @@ FS				(f|F|L)
 
 
 "writeln"		{ 
-					printf("Found writeln function: %s\n", yytext); 
+					fprintf(log_file, "Found writeln function: %s\n", yytext); 
 					return WRITELN;
 				}
 "readln"		{ 
-					printf("Found readln function: %s\n", yytext); 
+					fprintf(log_file, "Found readln function: %s\n", yytext); 
 					return READLN;
 				}
 "float"			{ 
-					printf("Found a keyword: %s\n", yytext); 
+					fprintf(log_file, "Found a keyword: %s\n", yytext); 
 					return FLOAT;
 				}				
 "int"			{ 
-					printf("Found a keyword: %s\n", yytext); 
+					fprintf(log_file, "Found a keyword: %s\n", yytext); 
 					return INT;
 				}
 "char"			{ 
-					printf("Found a keyword: %s\n", yytext); 
+					fprintf(log_file, "Found a keyword: %s\n", yytext); 
 					return CHAR;
 				}
 "void"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return VOID;
 				}
 "if"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return IF;
 				}
 "else"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return ELSE;
 				}
 "break"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return BREAK;
 				}
 "continue"		{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return CONTINUE;
 				}
 "default"		{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return DEFAULT;
 				}
 "do"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return DO;
 				}
 "while"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return WHILE;
 				}
 "case"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return CASE;
 				}
 "switch"		{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return SWITCH;
 				}
 "for"			{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return FOR;
 				}
 "import"		{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return IMPORT;
 				}
 "const"			{ 
-					printf("Found a keyword: %s\n", yytext); 
+					fprintf(log_file, "Found a keyword: %s\n", yytext); 
 					return CONST;
 				}
 "return"		{ 
-					printf("Found a keyword: %s\n", yytext);
+					fprintf(log_file, "Found a keyword: %s\n", yytext);
 					return RETURN;
 				}
 "+"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '+';
 				}
 "-"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '-';
 				}
 "*"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '*';
 				}
 "/"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '/';
 				}
 "~"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '~';
 				}	
 "&&"			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return AND_AND;
 				}
 "||"			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return OR_OR;
 				}
 "!"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '!';
 				}
 
 ">"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '>';
 				}
 "<"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '<';
 				}
 ">="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return GE;
 				}
 "<="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return LE;
 				}
 "=="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return EQ;
 				}
 "!="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return NEQ;
 				}
 "="				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '=';
 				}
 "+="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ADD_ASS;
 				}
 "-="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return SUB_ASS;
 				}
 "*="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return MUL_ASS;
 				}
 "/="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return DIV_ASS;
 				}
 "~="			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return CAT_ASS;
 				}				
 "--"			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return SUB_SUB;
 				}
 "++"			{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ADD_ADD;
 				}
 "."				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '.';
 				}
 "("				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '(';
 				}
 ")"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ')';
 				}
 "["				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '[';
 				}
 "]"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ']';
 				}
 "{"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '{';
 				}
 "}"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return '}';
 				}
 ","				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ',';
 				}
 ";"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ';';
 				}
 ":"				{
-					printf("Found a token: %s\n", yytext);
+					fprintf(log_file, "Found a token: %s\n", yytext);
 					return ':';
 				}
 {L}({L}|{D})*				{ 
-								printf("Found a IDENTIFIER %s\n", yytext);
+								fprintf(log_file, "Found a IDENTIFIER %s\n", yytext);
 								yylval.strval = (char*) malloc((strlen(yytext) + 1) * sizeof(char));
 								strcpy(yylval.strval, yytext);
 								return ID;
 							}
 
 0{D}+{IS}?					{ 
-								printf("Found a INTEGER %d\n", getInt(yytext)); 
+								fprintf(log_file, "Found a INTEGER %d\n", getInt(yytext)); 
 								yylval.ival = getInt(yytext);
 								return INTVAL;
 							}
 
 {D}+{IS}?					{ 
-								printf("Found a INTEGER %d\n", getInt(yytext)); 
+								fprintf(log_file, "Found a INTEGER %d\n", getInt(yytext)); 
 								yylval.ival = getInt(yytext);
 								return INTVAL;
 							}
 0[xX]{H}+{IS}?				{ 
-								printf("Found a INTEGER %d\n", getInt(yytext)); 
+								fprintf(log_file, "Found a INTEGER %d\n", getInt(yytext)); 
 								yylval.ival = getInt(yytext);
 								return INTVAL;
 							}
 
 {D}+{E}{FS}?				{ 
-								printf("Found a FLOAT %.3f\n", getFloat(yytext)); 
+								fprintf(log_file, "Found a FLOAT %.3f\n", getFloat(yytext)); 
 								yylval.fval = getFloat(yytext);
 								return FLOATVAL;
 							}
 {D}*"."{D}*({E})?{FS}?		{ 
-								printf("Found a FLOAT %.3f\n", getFloat(yytext)); 
+								fprintf(log_file, "Found a FLOAT %.3f\n", getFloat(yytext)); 
 								yylval.fval = getFloat(yytext);
 								return FLOATVAL;
 							}
 
-"/*"(.|\n)*?"*/"			{ printf("Found a block comment\n"); }
-"//".*						{ printf("Found a inline comment\n"); }
+"/*"(.|\n)*?"*/"			{ fprintf(log_file, "Found a block comment\n"); }
+"//".*						{ fprintf(log_file, "Found a inline comment\n"); }
 
 "/+"						{ BEGIN(nestcomment); }
 <nestcomment>\n				{ ++line_number; }
 <nestcomment>[^+]*			{ /* eat all char, but not plus */ }
 <nestcomment>"+"+[^+/]*		{ /* eat all char, but not plus */ }
-<nestcomment>"+"+"/"		{ printf("Found a nesting block comment\n"); BEGIN 0; }
+<nestcomment>"+"+"/"		{ fprintf(log_file, "Found a nesting block comment\n"); BEGIN 0; }
 
 [rR]\"(\\.|[^\\"])*\"		{ 
-								printf("Found a wysiwyg string: %s\n", yytext); 
+								fprintf(log_file, "Found a wysiwyg string: %s\n", yytext); 
 								yylval.strval = (char*) malloc((strlen(yytext) + 1) * sizeof(char));
 								strcpy(yylval.strval, yytext);
 								return STRINGVAL;
 							}
 \`(\\.|[^\\`])*\`			{ 
-								printf("Found a wysiwyg string: %s\n", yytext); 
+								fprintf(log_file, "Found a wysiwyg string: %s\n", yytext); 
 								yylval.strval = (char*) malloc((strlen(yytext) + 1) * sizeof(char));
 								strcpy(yylval.strval, yytext);
 								return STRINGVAL;
 							}
 
 \'(\\.|[^\\'])\'			{ 
-								printf("Found a char literal: %c\n", getChar(yytext)); 
+								fprintf(log_file, "Found a char literal: %c\n", getChar(yytext)); 
 								yylval.cval = getChar(yytext);
 								return CHARVAL;
 							}
@@ -309,7 +308,7 @@ FS				(f|F|L)
 <string>\n					{ ++line_number; }
 <string>\\t					{ appendChar('\t'); }
 <string>\\[^nt]				{ appendChar(yytext[1]); }
-<string>\"					{ printf("Found string: %s\n", strbuf); BEGIN 0; yylval.strval = strbuf; return STRINGVAL; }
+<string>\"					{ fprintf(log_file, "Found string: %s\n", strbuf); BEGIN 0; yylval.strval = strbuf; return STRINGVAL; }
 
 [ \t\r\f]					{ /* white space do nothing */ }
 \n							{ ++line_number; }
@@ -320,14 +319,16 @@ FS				(f|F|L)
 
 int main(int argc, char *argv[])
 {
-	yyin=fopen("sort.d","r");
+	yyin=fopen("01.d","r");
 
+	// scanner
+	log_file = fopen("d.log", "w");
 	yyparse();
-	if (doSemantic(prog))
-		generateByteCode();
 
 	//printTree();
     //yylex();    
+
+	fclose(log_file);
     return 0;
 }
 
