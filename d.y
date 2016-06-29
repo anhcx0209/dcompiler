@@ -3,6 +3,7 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include <malloc.h>
+
 	void yyerror(char const *s);
 	extern int yylex(void);
 	extern int line_number;
@@ -58,8 +59,7 @@
 	struct Dimention *AddDimToDimList(struct Dimention *, int);
 
 	// PROGRAM
-	struct Program *prog;	
-	int currId = 0;
+	struct Program *prog;
 %}
 
 %union {	
@@ -101,8 +101,7 @@
 %token <strval> STRINGVAL ID
 %token <cval> CHARVAL
 
-%token BREAK CONTINUE DEFAULT RETURN IF WHILE DO CASE SWITCH FOR IMPORT CONST INT FLOAT CHAR VOID ADD_ADD SUB_SUB
-%token READLN WRITELN
+%token BREAK CONTINUE DEFAULT RETURN IF WHILE DO CASE SWITCH FOR IMPORT CONST INT FLOAT CHAR VOID ADD_ADD SUB_SUB READLN WRITELN
 
 %left ','
 %left '=' ADD_ASS SUB_ASS MUL_ASS DIV_ASS CAT_ASS
@@ -111,7 +110,9 @@
 %left EQ NEQ '<' LE '>' GE
 %left '+' '-' '~'
 %left '*' '/'
-%left '!' UMINUS ADDADDB SUBSUBB
+%left ADDADDB SUBSUBB UMINUS '!'
+%left ADDADDA SUBSUBA
+%right ADD_ADD SUB_SUB
 %left '[' ']'
 %left '(' ')'
 %right ELSE CASE DEFAULT
@@ -225,16 +226,18 @@ Expression
 	| Expression CAT_ASS Expression {$$=CreateExpr(_CAT_ASS, (void *)$1, (void *)$3);}
 	| Expression AND_AND Expression {$$=CreateExpr(_AND_AND, (void *)$1, (void *)$3);}
 	| Expression OR_OR Expression {$$=CreateExpr(_OR_OR, (void *)$1, (void *)$3);}
-	| ADD_ADD Expression %prec ADDADDB {$$=CreateExpr(_ADD_ADD_B, (void *)$2, NULL);}
-	| SUB_SUB Expression %prec SUBSUBB {$$=CreateExpr(_SUB_SUB_B, (void *)$2, NULL);}
 	| Expression EQ Expression {$$=CreateExpr(_EQ, (void *)$1, (void *)$3);}
 	| Expression NEQ Expression {$$=CreateExpr(_NEQ, (void *)$1, (void *)$3);}
 	| Expression '>' Expression {$$=CreateExpr(_GT, (void *)$1, (void *)$3);}
 	| Expression '<' Expression {$$=CreateExpr(_LT, (void *)$1, (void *)$3);}	
 	| Expression GE Expression {$$=CreateExpr(_GE, (void *)$1, (void *)$3);}
 	| Expression LE Expression {$$=CreateExpr(_LE, (void *)$1, (void *)$3);}
-	| '-' Expression %prec UMINUS {$$=CreateExpr(_U_MINUS, (void *)$2, NULL);}
 	| '!' Expression {$$=CreateExpr(_NOT, (void *)$2, NULL);}	
+	| '-' Expression %prec UMINUS {$$=CreateExpr(_U_MINUS, (void *)$2, NULL);}
+	| ADD_ADD Expression %prec ADDADDB {$$=CreateExpr(_ADD_ADD_B, (void *)$2, NULL);}
+	| SUB_SUB Expression %prec SUBSUBB {$$=CreateExpr(_SUB_SUB_B, (void *)$2, NULL);}		
+	| Expression ADD_ADD %prec ADDADDA {$$=CreateExpr(_ADD_ADD_A, (void *)$1, NULL);}
+	| Expression SUB_SUB %prec SUBSUBA {$$=CreateExpr(_SUB_SUB_A, (void *)$1, NULL);}
 	| '(' Expression ')' {$$=$2;}
 	| ID '(' ')' {$$=CreateExpr(_FUNCALL, (void *)$1, NULL);}
 	| ID '(' Arguments ')' {$$=CreateExpr(_FUNCALL, (void *)$1, (void *)$3);}
@@ -312,7 +315,7 @@ DotID
 
 void yyerror(char const *s)
 {
-	printf("Syntax error on line: %d! Message: %s\n", line_number, s);	
+	printf("Line %d: %s\n", line_number, s);	
 	exit(-1);
 }
 
