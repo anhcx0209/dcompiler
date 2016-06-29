@@ -1,0 +1,5 @@
+rm program.svg
+rm program.dot
+./d
+dot -Tsvg program.dot -o program.svg
+xdg-open program.svg
