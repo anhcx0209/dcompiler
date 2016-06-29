@@ -1,4 +1,4 @@
-%{
+%{	
 	#include "tree_struct.h"
 	#include <stdio.h>
 	#include <string.h>

@@ -1,16 +1,16 @@
 %{
-#include "tree_struct.h"
+#include "tree_print.h"
 #include "d.tab.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "tree_print.h"
 
 extern int yyparse(void);
 	
 char * strbuf;
 int line_number = 1;
 FILE *log_file;
+FILE *graph_file;
 
 int getInt(char *);
 float getFloat(char *);
