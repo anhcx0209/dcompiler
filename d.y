@@ -511,13 +511,17 @@ struct Expression *CreateExpr(int type, void *left, void *right) {
 			expr->right = (struct Expression *)right;
 			break;	
 		case _ADD_ADD_B:
-		case _SUB_SUB_B:
+		case _SUB_SUB_B:		
 		case _NOT:
 		case _U_MINUS:			
 		case _WRITELN:
 		case _READLN:
 			expr->left = (struct Expression *)left;
 			break;
+		case _SUB_SUB_A:
+		case _ADD_ADD_A:
+			expr->right = (struct Expression *)left;
+			break;	
 		default:
 			expr->left = (struct Expression *)left;
 			expr->right = (struct Expression *)right;

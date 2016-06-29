@@ -352,6 +352,19 @@ void printExpr(int id, struct Expression *expr) {
 			printEdge(id, leftid);
 			printExpr(leftid, expr->left);
 			break;		
+		case _ADD_ADD_A:
+		case _SUB_SUB_A:
+			sprintf(str_print, "%s", getSymbol(expr->type));
+			strcat(str_print, "(");
+			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, ")");
+			printNode(id, str_print);
+
+			rightid = ++cur_id;
+			printEdge(id, rightid);
+			printExpr(rightid, expr->right);		
+
+			break;
 		case _CASTING_TYPE:
 			strcat(str_print, "(");
 			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
