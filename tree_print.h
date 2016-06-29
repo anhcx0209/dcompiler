@@ -6,6 +6,7 @@
 
 int cur_id = 0;
 extern struct Program *prog;
+FILE *graph_file;
 
 char *getSemanticTypeString(struct SemanticType);
 char * getTypeString(enum BasicType);
@@ -39,26 +40,26 @@ void printSwitchStm(int, struct SwitchStm *);
 void printCaseStm(int, struct CaseStm *);
 
 void printNode(int id, const char * label) {
-	printf("node%d [label=\"%s\"];\n", id, label);
+	fprintf(graph_file, "node%d [label=\"%s\"];\n", id, label);
 }
 
 void printEdge(int startId, int endId) {
-	printf("node%d -> node%d;\n", startId, endId);
+	fprintf(graph_file, "node%d -> node%d;\n", startId, endId);
 }
 
 void printTree() {		
-	FILE *pic_file = freopen("program.dot", "w", stdout);
-	printf("digraph G {");
+	graph_file = fopen("program.dot", "w");
+	fprintf(graph_file, "digraph G {");
 	printProgram(cur_id, prog);
-	printf("}");	
-	fclose(pic_file);	
+	fprintf(graph_file, "}");	
+	fclose(graph_file);	
 }
 
-void printProgram(int prog_id, struct Program *prog) {		
-	printNode(prog_id, prog->name);
+void printProgram(int prog_id, struct Program *prog) {			
+	printNode(prog_id, prog->name);	
 	printEdge(prog_id, ++cur_id);
 	printNode(cur_id, "Stm List");
-	printStmList(cur_id, prog->stm_list);
+	printStmList(cur_id, prog->stm_list);	
 }
 
 void printStmList(int stmlist_id, struct StatementList *list) {		

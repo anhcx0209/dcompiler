@@ -10,7 +10,6 @@ extern int yyparse(void);
 char * strbuf;
 int line_number = 1;
 FILE *log_file;
-FILE *graph_file;
 
 int getInt(char *);
 float getFloat(char *);
