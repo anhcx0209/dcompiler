@@ -1,0 +1,5 @@
+#ifndef _BYTE_CODE_STRUCT_H_
+#define _BYTE_CODE_STRUCT_H_
+
+
+#endif // BYTE_CODE_STRUCT_H

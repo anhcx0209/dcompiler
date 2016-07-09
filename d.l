@@ -1,6 +1,7 @@
 %{
 #include "tree_print.h"
 #include "d.tab.h"
+#include "bytecode.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -323,10 +324,9 @@ int main(int argc, char *argv[])
 	// scanner	
 	printf("Compiling...\n");
 	log_file = fopen("d.log", "w");
-	yyparse();
+	yyparse();    
 
-	printTree();
-    //yylex();    
+	//printTree();
 
 	printf("Compiling successfully...\n");
 	fclose(log_file);
