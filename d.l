@@ -327,6 +327,7 @@ int main(int argc, char *argv[])
 	yyparse();    
 
 	//printTree();
+	generateByteCode();
 
 	printf("Compiling successfully...\n");
 	fclose(log_file);
