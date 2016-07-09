@@ -8,6 +8,8 @@ void generateByteCode() {
 	main_code = createByteList();
 
 	// MAGIC NUMBER
+	append4Bytes(main_code, 0xCAFEBABE);
+
 
 }
 
@@ -36,13 +38,14 @@ void appendByte(struct ByteList *list, uint8_t data) {
 }
 
 void append2Bytes(struct ByteList *list, uint16_t data) {
-
+	appendByte(list, (uint8_t) ((data >> 8) & 0xFF) );
+	appendByte(list, (uint8_t) (data & 0xFF));
 }
 
 void append4Bytes(struct ByteList *list, uint32_t data) {
-
+	append2Bytes(list, (uint16_t) ((data >> 16) & 0xFFFF));
+	append2Bytes(list, (uint16_t) (data & 0xFFFF));
 }
-
 
 
 #endif // BYTE_CODE_H
