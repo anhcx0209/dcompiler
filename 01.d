@@ -5,18 +5,20 @@ void dosomething2(float x, float y);
 
 void main() {
 	int x = 100; 
-	(--x)++;
+	int y, z;
 
+	float f1, f2;
 
-	for (int i = 100; i < 70; i++)
+	int i = 0;
+	for (i = 100; i < 70; i++)
 		x *= 100;
 
 	switch (x) {
 		case 1:
-			dosomething1(x, y);
+			dosomething1(x, y, z);
 			break;			
 		case 2:
-			dosomething2();
+			dosomething2(f1, f2);
 			break;
 		default:
 			break;

@@ -10,14 +10,14 @@ bool doSemantic(struct Program * p) {
 	if (checkSemanticStmList(p->stm_list, semantic->field_table)) {		
 		// create const table
 		createConstTable(p);		
-		addConstFunction();
+		// addConstFunction();
 
-		file = fopen("semantic.txt", "w");
-		printConstTable(file);
-		printMethodTable(file);
-		printVarTable(file, semantic->field_table);
+		// file = fopen("semantic.txt", "w");
+		// printConstTable(file);
+		// printMethodTable(file);
+		// printVarTable(file, semantic->field_table);
 
-		fclose(file);
+		// fclose(file);
 
 		return true;
 	}
@@ -120,8 +120,15 @@ void addStmListToConstTable(struct StatementList * stmlist) {
 				if (iter->switch_stm->body != NULL) addStmListToConstTable(iter->switch_stm->body);
 				break;
 			case _CASE_STM:
-				addExprToConstTable(iter->case_stm->option);		
-				if (iter->case_stm->body != NULL) addStmListToConstTable(iter->case_stm->body);
+				printf("visit case stm\n");
+				addExprToConstTable(iter->case_stm->option);				
+				if (iter->case_stm->body != NULL) addStmListToConstTable(iter->case_stm->body);				
+				break;
+			case _BREAK_STM:
+			case _CONTINUE_STM:
+				break;
+			case _DEFAULT_STM:
+				if (iter->default_stm != NULL) addStmListToConstTable(iter->default_stm);
 				break;
 			case _RETURN_STM:
 				addExprToConstTable(iter->expr_stm);
@@ -162,9 +169,14 @@ void addExprToConstTable(struct Expression *expr) {
 				addExprToConstTable(iter);
 				iter = iter->next;
 			}
+			break;
 		case _POSTFIX_ASS:
 			addExprToConstTable(expr->left);
 			addExprToConstTable(expr->mid);
+			addExprToConstTable(expr->right);
+			break;
+		case _ADD_ADD_A:
+		case _SUB_SUB_A:
 			addExprToConstTable(expr->right);
 			break;
 		case _CASTING_TYPE:
@@ -294,7 +306,7 @@ void createConstTable(struct Program *prog) {
 			case _VAR_DECL_STM:						
 				addVarsToConstTable(iter->var_decl->var_list, _GLOBAL);
 				break;
-			case _FUNC_DECL_STM:
+			case _FUNC_DECL_STM:				
 				addFuncDeclToConstTable(iter->fun_decl);
 				break;
 			case _FUNC_DEF_STM:
@@ -453,13 +465,12 @@ bool checkSemanticStmList(struct StatementList *stmlist, struct VarTable *var_ta
 					ret_expr = checkSemanticExpr(stm->for_stm->variable->init_expr, var_table);
 					if (ret_expr.type == _UNKNOWN) return false;
 				}
-
 				ret_expr = checkSemanticExpr(stm->for_stm->expr1, var_table);
 				if (ret_expr.type == _UNKNOWN) return false;
 				ret_expr = checkSemanticExpr(stm->for_stm->expr2, var_table);
 				if (ret_expr.type == _UNKNOWN) return false;
 				ret_stm = checkSemanticStmList(stm->for_stm->body, var_table);	
-				if (ret_stm == false) return false;
+				if (ret_stm == false) return false;				
 				break;
 			case _SWITCH_STM:
 				ret_expr = checkSemanticExpr(stm->switch_stm->condition, var_table);
@@ -480,7 +491,7 @@ bool checkSemanticStmList(struct StatementList *stmlist, struct VarTable *var_ta
 			default:
 				break;
 		}
-	}
+	}	
 	return true;
 }
 
@@ -873,30 +884,27 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 				return st;	
 			}
 
-			expr_iter = expr->left;
-			while (expr_iter != NULL) {
+			// check semantic type of all arguments
+			i = 0;
+			for (expr_iter = expr->left; expr_iter != NULL; expr_iter = expr_iter->next, i++) {
 				left = checkSemanticExpr(expr_iter, var_table);
+				if (left.type == _UNKNOWN) return st;					
 
-				if (left.type == _UNKNOWN) return st;				
-
-				if (left.type == _INT && method->param_type[expr->next_expr_count].type == _FLOAT) {
+				if (left.type == _INT && method->param_type[i].type == _FLOAT) {
 					addCastExpr(expr, right, _LEFT);					
 				} else {
-					if (!isEqualSemantic(left, method->param_type[expr->next_expr_count])) {
-						printf("Line %d: type is not match at arguments %d of function %s\n",expr->line, expr->next_expr_count + 1, expr->sval);	
+					if (!isEqualSemantic(left, method->param_type[i])) {
+						printf("Line %d: type is not match at arguments %d of function %s\n", expr->line, i + 1, expr->sval);	
 						return st;
 					}					
 				}
-
-				expr_iter = expr_iter->next;
-			}	
+			}
 
 			st.type = method->return_type.type;
 			st.dim_count = method->return_type.dim_count;
 			st.basic_type = method->return_type.basic_type;
 			expr->semantic_type = st;
 			return st;
-
 		case _READLN:
 		case _WRITELN:			
 			left = checkSemanticExpr(expr->left, var_table);
