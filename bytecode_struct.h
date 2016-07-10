@@ -29,4 +29,7 @@ void append2Bytes(struct ByteList *list, uint16_t data);
 void append4Bytes(struct ByteList *list, uint32_t data);
 
 
+void fprintList(struct ByteList *list, FILE *pFile);
+void printList(struct ByteList *list);
+
 #endif // BYTE_CODE_STRUCT_H

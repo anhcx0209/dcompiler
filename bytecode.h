@@ -47,5 +47,20 @@ void append4Bytes(struct ByteList *list, uint32_t data) {
 	append2Bytes(list, (uint16_t) (data & 0xFFFF));
 }
 
+void fprintList(struct ByteList *list, FILE *pFile) {
+	if (list != NULL) {
+		for (struct ByteElement *i = list->first; i != NULL; i = i->next) {
+			fwrite(&i->data, 1, 1, pFile);
+		}
+	}
+}
+
+void printList(struct ByteList *list) {
+	if (list != NULL) {
+		for (struct ByteElement *i = list->first; i != NULL; i = i->next) {
+			printf("%02X\n", i->data);
+		}
+	}
+}
 
 #endif // BYTE_CODE_H
