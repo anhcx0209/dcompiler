@@ -1,5 +1,8 @@
 import std.io;
 
+void dosomething1(int x, int y, int z);
+void dosomething2(float x, float y);
+
 void main() {
 	int x = 100; 
 	(--x)++;

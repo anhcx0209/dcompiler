@@ -485,6 +485,7 @@ struct Expression *CreateExpr(int type, void *left, void *right) {
 	struct Expression *expr = (struct Expression *)malloc(sizeof(struct Expression));
 	expr->type = (enum ExprType)type;
 	expr->right = expr->left = expr->mid = expr->next = NULL;
+	expr->next_expr_count = 0;
 
 	switch (type) {
 		case _IDVAL:
@@ -504,7 +505,7 @@ struct Expression *CreateExpr(int type, void *left, void *right) {
 			break;
 		case _FUNCALL:
 			expr->sval = (char *)left;
-			expr->left = (struct Expression *)right;
+			expr->left = (struct Expression *)right;			
 			break;
 		case _POSTFIX:
 			expr->left = (struct Expression *)left;
@@ -532,17 +533,19 @@ struct Expression *CreateExpr(int type, void *left, void *right) {
 	return expr;
 }
 
-struct Expression *AddArgToArgList(struct Expression *root, struct Expression *newNode) {				
+struct Expression *AddArgToArgList(struct Expression *root, struct Expression *newNode) {					
 	if (root == NULL) {		
 		struct Expression *ret = (struct Expression *)malloc(sizeof(struct Expression));
+		++ret->next_expr_count;		
 		ret = newNode;
 		return ret;
-	} else {						
+	} else {
 		struct Expression * iter = root;		
 		while (iter->next != NULL) {
 			iter = iter->next;			
 		}		
 		iter->next = newNode;	
+		++root->next_expr_count;
 		return root;
 	}	
 }

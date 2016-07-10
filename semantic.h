@@ -7,7 +7,6 @@ bool doSemantic(struct Program * p) {
 	bool ret_stm;
 	
 	semantic = initSemantic();
-	
 	if (checkSemanticStmList(p->stm_list, semantic->field_table)) {		
 		// create const table
 		createConstTable(p);		
@@ -388,7 +387,7 @@ int addToConstTable(enum SemanticConstantType type, void *ptr1, void *ptr2) {
 	return ++(semantic->const_table->size);
 }
 
-struct MethodTableConstant *checkSemanticFundef(struct FunctionDef *fun_def) {	
+struct MethodTableConstant *checkSemanticFundef(struct FunctionDef *fun_def) {		
 	struct MethodTableConstant *method = findMethod(fun_def->header->name);
 	if (method == NULL) {		
 		method = addToMethodTable(fun_def->header);
@@ -407,14 +406,14 @@ bool checkSemanticStmList(struct StatementList *stmlist, struct VarTable *var_ta
 	if (stmlist == NULL) return true;
 	// init new table
 	bool ret_stm;
-	struct SemanticType ret_expr;
+	struct SemanticType ret_expr;	
 
 	for (struct Statement *stm = stmlist->first; stm != NULL; stm = stm->next) {
 		switch (stm->type) {
 			case _VAR_DECL_STM:				
 				if (!checkSemanticVarList(stm->var_decl->var_list, var_table)) return false;		
 				break;
-			case _FUNC_DECL_STM:
+			case _FUNC_DECL_STM:				
 				addToMethodTable(stm->fun_decl);									
 			 	break;				
 			case _FUNC_DEF_STM:
@@ -445,7 +444,7 @@ bool checkSemanticStmList(struct StatementList *stmlist, struct VarTable *var_ta
 				ret_stm = checkSemanticStmList(stm->while_stm->body, var_table);			
 				if (ret_stm == false) return false;
 				break;
-			case _FOR_STM:
+			case _FOR_STM:				
 				if (stm->for_stm->variable->type != _UNKNOWN){
 					ret_stm = checkSemanticVarList(stm->for_stm->variable, var_table);
 					if (ret_stm == false) return false;
@@ -463,17 +462,17 @@ bool checkSemanticStmList(struct StatementList *stmlist, struct VarTable *var_ta
 				if (ret_stm == false) return false;
 				break;
 			case _SWITCH_STM:
-				// ret_expr = checkSemanticExpr(stm->switch_stm->condition, var_table);
-				// if (ret_expr.type == _UNKNOWN) return false;
-				// ret_stm = checkSemanticStmList(stm->switch_stm->body, var_table);	
-				// if (ret_stm == false) return false;
-				// break;
+				ret_expr = checkSemanticExpr(stm->switch_stm->condition, var_table);
+				if (ret_expr.type == _UNKNOWN) return false;
+				ret_stm = checkSemanticStmList(stm->switch_stm->body, var_table);	
+				if (ret_stm == false) return false;
+				break;
 			case _CASE_STM:
-				// ret_expr = checkSemanticExpr(stm->case_stm->option, var_table);
-				// if (ret_expr.type == _UNKNOWN) return false;
-				// ret_stm = checkSemanticStmList(stm->case_stm->body, var_table);			
-				// if (ret_stm == false) return false;
-				// break;
+				ret_expr = checkSemanticExpr(stm->case_stm->option, var_table);
+				if (ret_expr.type == _UNKNOWN) return false;
+				ret_stm = checkSemanticStmList(stm->case_stm->body, var_table);			
+				if (ret_stm == false) return false;
+				break;
 			case _RETURN_STM:
 				ret_expr = checkSemanticExpr(stm->expr_stm, var_table);
 				if (ret_expr.type == _UNKNOWN) return false;
@@ -710,8 +709,21 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 				return st;
 			} 
 
-			expr->semantic_type = left;	
+			expr->semantic_type = left;
 			return left;
+		case _ADD_ADD_A:
+		case _SUB_SUB_A:
+			right = checkSemanticExpr(expr->right, var_table);
+			if (right.type == _UNKNOWN) return st;
+
+			if (right.type != _INT) {
+				printf("Line %d: operand %s require integer.\n", expr->type, getSymbol(expr->type));
+				return st;
+			}
+
+			expr->semantic_type = right;
+
+			return right;
 		case _EQ:
 		case _GT:
 		case _LT:
@@ -839,24 +851,33 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			}
 
 			return st;
-		case _FUNCALL:			
+		case _FUNCALL:						
 			method = findMethod(expr->sval);
+
+			// check if function is not declared
 			if (method == NULL) {
 				printf("Line %d: function %s is not declared\n",expr->line, expr->sval);
 				return st;
 			}			
 
-			expr_iter = expr->left;
+			// compare number args and number params
 			expr->next_expr_count = 0;
-			
-			while (expr_iter != NULL) {
+			for (expr_iter = expr->left; expr_iter != NULL; expr_iter = expr_iter->next, expr->next_expr_count++) ;			
+			if (expr->next_expr_count > method->param_count) {
+				printf("Line %d, too much arguments in function call %s\n", expr->line, expr->sval);
+				return st;
+			}
 
+			if (expr->next_expr_count < method->param_count) {
+				printf("Line %d, too few arguments in function call %s\n", expr->line, expr->sval);
+				return st;	
+			}
+
+			expr_iter = expr->left;
+			while (expr_iter != NULL) {
 				left = checkSemanticExpr(expr_iter, var_table);
 
-				if (left.type == _UNKNOWN) return st;
-
-				printf("found: %d\n", left.type);
-				printf("require: %d\n", method->param_type[expr->next_expr_count].type);
+				if (left.type == _UNKNOWN) return st;				
 
 				if (left.type == _INT && method->param_type[expr->next_expr_count].type == _FLOAT) {
 					addCastExpr(expr, right, _LEFT);					
@@ -867,19 +888,8 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 					}					
 				}
 
-				expr->next_expr_count++;
-				if (expr->next_expr_count + 1 > method->param_count) {
-					printf("Line %d, too much arguments in function call %s\n", expr->line, expr->sval);
-					return st;	
-				}
 				expr_iter = expr_iter->next;
 			}	
-
-
-			if (expr->next_expr_count < method->param_count) {
-				printf("Line %d, too few arguments in function call %s\n", expr->line, expr->sval);
-				return st;	
-			}
 
 			st.type = method->return_type.type;
 			st.dim_count = method->return_type.dim_count;
@@ -954,7 +964,7 @@ void addPosfixAssExpr(struct Expression *e) {
 	e->left = left;
 }
 
-struct MethodTableConstant *addToMethodTable(struct FunctionDecl *func_decl) {		
+struct MethodTableConstant *addToMethodTable(struct FunctionDecl *func_decl) {
 	struct MethodTableConstant *method = (struct MethodTableConstant*)malloc(sizeof(struct MethodTableConstant));
 	method->next = NULL;
 	method->name = func_decl->name;
@@ -974,14 +984,14 @@ struct MethodTableConstant *addToMethodTable(struct FunctionDecl *func_decl) {
 	// count parameters
 	method->param_count = 0;
 	struct Variable *iter = func_decl->arg_list;
-	while (iter != NULL) {
+	while (iter != NULL) {		
 		method->param_count++;
 		iter = iter->next;
-	}
-	method->param_type = (struct SemanticType *)malloc(method->param_count * sizeof(struct SemanticType));
+	}	
 
+	method->param_type = (struct SemanticType *)malloc(method->param_count * sizeof(struct SemanticType));
 	// analyse parameters
-	int i;
+	int i = 0;
 	for (iter = func_decl->arg_list; iter != NULL; iter = iter->next, i++) {
 		method->param_type[i] = getSemanticType(iter->type, iter->dim);
 	}
@@ -996,6 +1006,7 @@ struct MethodTableConstant *addToMethodTable(struct FunctionDecl *func_decl) {
 	}
 	semantic->method_table->size++;	
 
+
 	return method;
 }
 
@@ -1008,7 +1019,7 @@ struct MethodTableConstant *findMethod(char * id) {
 	return NULL;
 }
 
-struct SemanticType getSemanticType(enum BasicType type, struct Dimention *dim) {
+struct SemanticType getSemanticType(enum BasicType type, struct Dimention *dim) {	
 	struct SemanticType st;	
 	st.type = type;
 	st.basic_type = type;
@@ -1023,7 +1034,7 @@ struct SemanticType getSemanticType(enum BasicType type, struct Dimention *dim) 
 			st.type = _STRING;
 		else
 			st.type = _ARRAY;
-	} 
+	}
 	return st;
 }
 

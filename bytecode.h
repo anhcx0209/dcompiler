@@ -10,7 +10,20 @@ void generateByteCode() {
 	// MAGIC NUMBER
 	append4Bytes(main_code, 0xCAFEBABE);
 
+	// MINOR AND MAJOR VERSION 
+	append4Bytes(main_code, 0x0003002d);
+	struct ByteList* ct_code = generateCodeConstTable();
 
+
+	// PRINT LIST
+	printList(main_code);
+}
+
+
+struct ByteList* generateCodeConstTable() {
+	struct ByteList *code = createByteList();
+	// empty const table
+	return code;
 }
 
 struct ByteList *createByteList() {

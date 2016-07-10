@@ -23,6 +23,8 @@ struct ByteList *main_code;
 void generateByteCode();
 struct ByteList *createByteList();
 
+struct ByteList* generateCodeConstTable();
+
 
 void appendByte(struct ByteList *list, uint8_t data);
 void append2Bytes(struct ByteList *list, uint16_t data);

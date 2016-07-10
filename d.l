@@ -1,6 +1,7 @@
 %{
 #include "tree_print.h"
 #include "d.tab.h"
+#include "semantic.h"
 #include "bytecode.h"
 #include <stdlib.h>
 #include <string.h>
@@ -326,10 +327,16 @@ int main(int argc, char *argv[])
 	log_file = fopen("d.log", "w");
 	yyparse();    
 
-	//printTree();
-	generateByteCode();
+	if (doSemantic(prog)) {
+		printf("Compiling successfully...\n");	
+	} else {
+		printf("Compiling unsuccessfully...\n");
+	}
 
-	printf("Compiling successfully...\n");
+	//printTree();
+	//generateByteCode();
+
+	
 	fclose(log_file);
     return 0;
 }
