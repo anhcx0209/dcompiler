@@ -546,7 +546,7 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 
 	struct MethodTableConstant *method;
 	struct VarTableConst *field;
-	struct Expression *expr_iter;
+	struct Expression *expr_iter, *expr_back;
 	int i;
 
 	switch (expr->type) {
@@ -872,18 +872,28 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 
 			// check semantic type of all arguments
 			i = 0;
-			for (expr_iter = expr->left; expr_iter != NULL; expr_iter = expr_iter->next, i++) {
+			expr_iter = expr->left;
+			expr_back = expr;
+			while (expr_iter != NULL) {
 				left = checkSemanticExpr(expr_iter, var_table);
 				if (left.type == _UNKNOWN) return st;					
 
-				if (left.type == _INT && method->param_type[i].type == _FLOAT) {
-					addCastExpr(expr, right, _LEFT);					
+				if ((left.type == _INT && method->param_type[i].type == _FLOAT) || (left.type == _FLOAT && method->param_type[i].type == _INT)) {
+					printf("add cast at : %d\n", i);
+					if (expr_back == expr)
+						expr_back->left = castExpr(expr_iter, method->param_type[i]);
+					else 
+						expr_back->next = castExpr(expr_iter, method->param_type[i]);					
 				} else {
 					if (!isEqualSemantic(left, method->param_type[i])) {
 						printf("Line %d: type is not match at arguments %d of function %s\n", expr->line, i + 1, expr->sval);	
 						return st;
 					}					
 				}
+
+				expr_back = expr_iter;
+				expr_iter = expr_iter->next;
+				i++;
 			}
 
 			st.type = method->return_type.type;

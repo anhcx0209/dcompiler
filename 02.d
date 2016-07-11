@@ -1,15 +1,13 @@
 import std.io;
 
+void dosomething1(int x, int y, int z);
+void dosomething2(float x, float y);
+
 int main() {
 
-	int[3][10] arr;
-	int i1, i2, i3;
-	float f1, f2, f3;
-
-	if (i1 > i2) {
-		f1 *= 100;
+	for (int i = 0; i < 10; i++) {
+		dosomething1(3, 2, 1.8);
 	}
-	
 
 	return 1;
 }
