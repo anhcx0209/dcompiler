@@ -152,12 +152,7 @@ char *getSemanticTypeString(struct SemanticType st) {
 	return getTypeString(_UNKNOWN);
 }
 
-void printVar(int id, struct Variable * var) {
-	printNode(id, "VARIABLE");
-	if (var->type != _UNKNOWN) {
-		printNode(++cur_id, getTypeString(var->type));
-		printEdge(id, cur_id);
-	}
+void printVar(int id, struct Variable * var) {	
 	char *name = (char *)malloc(100);
 	strcpy(name, "");
 	if (var->name != NULL) {
@@ -165,8 +160,7 @@ void printVar(int id, struct Variable * var) {
 		strcat(name, "(");
 		strcat(name, getSemanticTypeString(var->semantic_type));
 		strcat(name, ")");
-		printNode(++cur_id, name);
-		printEdge(id, cur_id);	
+		printNode(id, name);		
 	}
 
 	if (var->init_expr != NULL) {
