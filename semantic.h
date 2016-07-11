@@ -10,7 +10,7 @@ bool doSemantic(struct Program * p) {
 	if (checkSemanticStmList(p->stm_list, semantic->field_table)) {		
 		// create const table
 		createConstTable(p);		
-		// addConstFunction();
+		addConstFunction();
 
 		// file = fopen("semantic.txt", "w");
 		// printConstTable(file);
@@ -119,8 +119,7 @@ void addStmListToConstTable(struct StatementList * stmlist) {
 			case _SWITCH_STM:
 				if (iter->switch_stm->body != NULL) addStmListToConstTable(iter->switch_stm->body);
 				break;
-			case _CASE_STM:
-				printf("visit case stm\n");
+			case _CASE_STM:				
 				addExprToConstTable(iter->case_stm->option);				
 				if (iter->case_stm->body != NULL) addStmListToConstTable(iter->case_stm->body);				
 				break;
@@ -648,16 +647,10 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			// }
 
 			// casting 
-			if (left.type == _FLOAT && right.type == _INT) {							
+			if ((left.type == _FLOAT && right.type == _INT) || (left.type == _INT && right.type == _FLOAT)) {
 				addCastExpr(expr, left, _RIGHT);
 				expr->semantic_type = left;
 				return left;
-			}
-
-			if (left.type == _INT && right.type == _FLOAT) {
-				addCastExpr(expr, right, _LEFT);
-				expr->semantic_type = right;
-				return right;
 			}
 
 			// transform with []= 

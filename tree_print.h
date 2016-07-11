@@ -163,7 +163,7 @@ void printVar(int id, struct Variable * var) {
 	if (var->name != NULL) {
 		strcat(name, var->name);
 		strcat(name, "(");
-		//strcat(name, getSemanticTypeString(var->semantic_type));
+		strcat(name, getSemanticTypeString(var->semantic_type));
 		strcat(name, ")");
 		printNode(++cur_id, name);
 		printEdge(id, cur_id);	
@@ -295,29 +295,35 @@ void printExpr(int id, struct Expression *expr) {
 		case _IVAL:
 			sprintf(str_print, "%d", expr->ival);
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, "Int");
 			strcat(str_print, ")");
 			printNode(id, str_print);
 			break;
 		case _FVAL:
 			sprintf(str_print, "%.2f", expr->fval);
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, "Float");
 			strcat(str_print, ")");
 			printNode(id, str_print);
 			break;
 		case _CHVAL:
 			sprintf(str_print, "%c", expr->cval);
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, "Char");
 			strcat(str_print, ")");
 			printNode(id, str_print);
 			break;
 		case _SVAL:		
+			sprintf(str_print, "%s", expr->sval);
+			strcat(str_print, "(");
+			strcat(str_print, "String");
+			strcat(str_print, ")");
+			printNode(id, str_print);
+			break;
 		case _IDVAL:
 			sprintf(str_print, "%s", expr->sval);
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, getSemanticTypeString(expr->semantic_type));
 			strcat(str_print, ")");
 			printNode(id, str_print);
 			break;				
@@ -344,7 +350,7 @@ void printExpr(int id, struct Expression *expr) {
 		case _SUB_SUB_B:
 			sprintf(str_print, "%s", getSymbol(expr->type));
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, getSemanticTypeString(expr->semantic_type));
 			strcat(str_print, ")");
 			printNode(id, str_print);
 
@@ -356,7 +362,7 @@ void printExpr(int id, struct Expression *expr) {
 		case _SUB_SUB_A:
 			sprintf(str_print, "%s", getSymbol(expr->type));
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, getSemanticTypeString(expr->semantic_type));
 			strcat(str_print, ")");
 			printNode(id, str_print);
 
@@ -367,7 +373,7 @@ void printExpr(int id, struct Expression *expr) {
 			break;
 		case _CASTING_TYPE:
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, getSemanticTypeString(expr->semantic_type));
 			strcat(str_print, ")");
 			printNode(id, str_print);
 
@@ -378,7 +384,7 @@ void printExpr(int id, struct Expression *expr) {
 		case _POSTFIX_ASS:
 			sprintf(str_print, "%s", getSymbol(expr->type));		
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, getSemanticTypeString(expr->semantic_type));
 			strcat(str_print, ")");
 			printNode(id, str_print);
 
@@ -397,7 +403,7 @@ void printExpr(int id, struct Expression *expr) {
 		default:
 			sprintf(str_print, "%s", getSymbol(expr->type));
 			strcat(str_print, "(");
-			//strcat(str_print, getSemanticTypeString(expr->semantic_type));
+			strcat(str_print, getSemanticTypeString(expr->semantic_type));
 			strcat(str_print, ")");
 			printNode(id, str_print);
 

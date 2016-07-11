@@ -320,7 +320,7 @@ FS				(f|F|L)
 
 int main(int argc, char *argv[])
 {
-	yyin=fopen("01.d","r");
+	yyin=fopen("02.d","r");
 
 	// scanner	
 	printf("Compiling...\n");
@@ -328,12 +328,12 @@ int main(int argc, char *argv[])
 	yyparse();    
 
 	if (doSemantic(prog)) {
+		printTree();			
 		printf("Compiling successfully...\n");	
 	} else {
 		printf("Compiling unsuccessfully...\n");
 	}
-
-	//printTree();
+	
 	//generateByteCode();
 
 	

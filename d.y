@@ -652,7 +652,7 @@ struct Statement *CreateStmFromDefaultStm(struct StatementList * body) {
 	ret->type = _DEFAULT_STM;
 	ret->default_stm = body;
 	ret->next = NULL;
-	
+		
 	return ret;
 }
 

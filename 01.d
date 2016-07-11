@@ -23,8 +23,25 @@ void main() {
 		default:
 			break;
 	}
-	// single comment 
+	// single comment
+
+	if (x > 100)  {
+		dosomething2(f2, f1);
+	} else {
+		dosomething1(x, y, z);
+	}
 
 	/* block */
+	i = 15;
+	while (i <= 1) {
+		x++;
+		i--;
+	}
+
+	i = 0;
+	do {
+		writeln("Test string");
+		i++;
+	} while (i <= 3);
 
 }
