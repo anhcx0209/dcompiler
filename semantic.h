@@ -609,9 +609,7 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			}
 			// + - * / : cast to FLOAT if one is FLOAT
 			if (left.type == _FLOAT && right.type == _INT) {				
-				printf("before %d %d\n", expr->left->semantic_type.type, expr->right->semantic_type.type);
 				addCastExpr(expr, left, _RIGHT);
-				printf("after %d %d\n", expr->left->semantic_type.type, expr->right->semantic_type.type);
 				expr->semantic_type = left;
 				return left;
 			}
@@ -640,11 +638,6 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			right = checkSemanticExpr(expr->right, var_table);
 
 			if (left.type == _UNKNOWN || right.type == _UNKNOWN) return st;
-
-			// if (expr->left->type != _IDVAL) {
-			// 	printf("Line: %d operand %s require left operator is variable\n", expr->line, getSymbol(expr->type));
-			// 	return st;
-			// }
 
 			// casting 
 			if ((left.type == _FLOAT && right.type == _INT) || (left.type == _INT && right.type == _FLOAT)) {
