@@ -10,15 +10,14 @@ bool doSemantic(struct Program * p) {
 	if (checkSemanticStmList(p->stm_list, semantic->field_table)) {		
 		// create const table
 		createConstTable(p);		
-		addConstFunction();
+		//addConstFunction();
 
-		// file = fopen("semantic.txt", "w");
-		// printConstTable(file);
-		// printMethodTable(file);
-		// printVarTable(file, semantic->field_table);
+		file = fopen("semantic.txt", "w");
+		printConstTable(file);
+		printMethodTable(file);
+		printVarTable(file, semantic->field_table);
 
-		// fclose(file);
-
+		fclose(file);
 		return true;
 	}
 	else {	
@@ -518,9 +517,10 @@ bool checkSemanticVarList(struct Variable *vars, struct VarTable *var_table) {
 			expr_se_type = checkSemanticExpr(iter->init_expr, var_table);	
 			// check type missmatch
 			if (!isEqualSemantic(expr_se_type, iter->semantic_type)) {
-				if ((iter->semantic_type.type == _INT && expr_se_type.type == _FLOAT) || (iter->semantic_type.type == _FLOAT && expr_se_type.type == _INT)) 
+				if ((iter->semantic_type.type == _INT && expr_se_type.type == _FLOAT) || (iter->semantic_type.type == _FLOAT && expr_se_type.type == _INT)) {
+					iter->init_expr = castExpr(iter->init_expr, iter->semantic_type);
 					printf("Line %d: warning: auto cast between int and float\n", iter->line);
-				else {
+				} else {
 					printf("Line %d: type missmatch in variable %s declaration\n", iter->line, iter->name);	
 					return false;
 				}
@@ -947,6 +947,16 @@ void addCastExpr(struct Expression *e, struct SemanticType t, enum Direction d) 
 		e->right = newNode;
 	else
 		e->left = newNode;
+}
+
+struct Expression *castExpr(struct Expression *e, struct SemanticType t) {
+	struct Expression *cast = (struct Expression *)malloc(sizeof(struct Expression));
+	cast->type = _CASTING_TYPE;
+	cast->next = NULL;
+	cast->left = e;
+	cast->semantic_type = t;
+	
+	return cast;
 }
 
 void addPosfixAssExpr(struct Expression *e) {

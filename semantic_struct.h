@@ -244,4 +244,5 @@ char *getFuncDescriptor(enum BasicType, struct Dimention *, struct Variable *);
 // TRANSFORM TREE
 void addPosfixAssExpr(struct Expression *);
 void addCastExpr(struct Expression *, struct SemanticType, enum Direction);
+struct Expression *castExpr(struct Expression *, struct SemanticType);
 #endif

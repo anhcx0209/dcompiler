@@ -468,28 +468,28 @@ char * getTypeString(enum BasicType t) {
 
 	switch (t) {
 		case _INT:
-			strcpy(ret, "INT ");
+			strcpy(ret, "INT");
 			break;
 		case _FLOAT:
-			strcpy(ret, "FLOAT ");
+			strcpy(ret, "FLOAT");
 			break;
 		case _CHAR:
-			strcpy(ret, "CHAR ");
+			strcpy(ret, "CHAR");
 			break;
 		case _CLASS:
-			strcpy(ret, "CLASS ");
+			strcpy(ret, "CLASS");
 			break;
 		case _VOID:
-			strcpy(ret, "VOID ");
+			strcpy(ret, "VOID");
 			break;
 		case _STRING:
-			strcpy(ret, "STRING ");
+			strcpy(ret, "STRING");
 			break;
 		case _ARRAY:
-			strcpy(ret, "ARRAY ");			
+			strcpy(ret, "ARRAY");			
 			break;
 		case _UNKNOWN:
-			strcpy(ret, "UNKNOWN ");			
+			strcpy(ret, "UNKNOWN");			
 			break;
 	}
 
