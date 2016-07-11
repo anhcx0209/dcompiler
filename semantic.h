@@ -878,8 +878,7 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 				left = checkSemanticExpr(expr_iter, var_table);
 				if (left.type == _UNKNOWN) return st;					
 
-				if ((left.type == _INT && method->param_type[i].type == _FLOAT) || (left.type == _FLOAT && method->param_type[i].type == _INT)) {
-					printf("add cast at : %d\n", i);
+				if ((left.type == _INT && method->param_type[i].type == _FLOAT) || (left.type == _FLOAT && method->param_type[i].type == _INT)) {					
 					if (expr_back == expr)
 						expr_back->left = castExpr(expr_iter, method->param_type[i]);
 					else 
