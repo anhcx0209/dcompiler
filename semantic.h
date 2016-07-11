@@ -519,9 +519,9 @@ bool checkSemanticVarList(struct Variable *vars, struct VarTable *var_table) {
 			if (!isEqualSemantic(expr_se_type, iter->semantic_type)) {
 				if ((iter->semantic_type.type == _INT && expr_se_type.type == _FLOAT) || (iter->semantic_type.type == _FLOAT && expr_se_type.type == _INT)) {
 					iter->init_expr = castExpr(iter->init_expr, iter->semantic_type);
-					printf("Line %d: warning: auto cast between int and float\n", iter->line);
+					printf("Line %d: warning - auto cast between int and float\n", iter->line);
 				} else {
-					printf("Line %d: type missmatch in variable %s declaration\n", iter->line, iter->name);	
+					printf("Line %d: unable to initinaze variable %s\n", iter->line, iter->name);	
 					return false;
 				}
 			} 
@@ -647,7 +647,7 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			}
 
 			// transform with []= 
-			if (expr->left->type == _POSTFIX) addPosfixAssExpr(expr);
+			if (expr->left->type == _POSTFIX) transformPosfixAssExpr(expr);			
 
 			if (left.type == _INT && right.type == _CHAR) {
 				addCastExpr(expr, left, _RIGHT);
@@ -781,21 +781,21 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 
 			expr->semantic_type = left;	
 			return left;	
-		case _POSTFIX:
+		case _POSTFIX:			
 			left = checkSemanticExpr(expr->left, var_table);
 			right = checkSemanticExpr(expr->right, var_table);
 			if (left.type == _UNKNOWN || right.type == _UNKNOWN) return st;
 
 			// only work with left is array and right is int
-			if ((left.type == _ARRAY || left.type == _STRING) && right.type == _INT) {
+			if ((left.type == _ARRAY || left.type == _STRING) && right.type == _INT) {				
 				st.dim_count = left.dim_count - 1;
+				st.basic_type = left.basic_type;
+				st.type  = left.type;
 
 				if (st.dim_count == 0) {
 					st.type = left.basic_type;
 					st.basic_type = _UNKNOWN;
 				}
-				else 
-					st.type = _ARRAY;
 
 				expr->semantic_type = st;
 				return st;
@@ -959,13 +959,11 @@ struct Expression *castExpr(struct Expression *e, struct SemanticType t) {
 	return cast;
 }
 
-void addPosfixAssExpr(struct Expression *e) {
-	struct Expression *left = e->left->left;
-	struct Expression *right = e->left->right;
-
-	e->type = _POSTFIX_ASS;
-	e->mid = right;
-	e->left = left;
+void transformPosfixAssExpr(struct Expression *e) {	
+	e->type = _POSTFIX_ASS;	
+	e->semantic_type = e->left->semantic_type;
+	e->mid = e->left->right;
+	e->left = e->left->left;	
 }
 
 struct MethodTableConstant *addToMethodTable(struct FunctionDecl *func_decl) {

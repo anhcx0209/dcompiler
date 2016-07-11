@@ -141,7 +141,7 @@ void printVarDecl(int id, struct VariableDecl *var_decl) {
 
 char *getSemanticTypeString(struct SemanticType st) {
 	if (st.dim_count == 0) {
-		return getTypeString(st.basic_type);
+		return getTypeString(st.type);
 	} else {
 		if (st.basic_type == _CHAR && st.dim_count == 1) 
 			return getTypeString(_STRING);
@@ -381,7 +381,7 @@ void printExpr(int id, struct Expression *expr) {
 			printEdge(id, leftid);
 			printExpr(leftid, expr->left);
 			break;		
-		case _POSTFIX_ASS:
+		case _POSTFIX_ASS:			
 			sprintf(str_print, "%s", getSymbol(expr->type));		
 			strcat(str_print, "(");
 			strcat(str_print, getSemanticTypeString(expr->semantic_type));
@@ -392,13 +392,15 @@ void printExpr(int id, struct Expression *expr) {
 			printEdge(id, leftid);
 			printExpr(leftid, expr->left);						
 
+			midid = ++cur_id;
+			printEdge(id, midid);
+			printExpr(midid, expr->mid);
+
+
 			rightid = ++cur_id;
 			printEdge(id, rightid);
 			printExpr(rightid, expr->right);
 
-			midid = ++cur_id;
-			printEdge(id, midid);
-			printExpr(midid, expr->mid);
 			break;
 		default:
 			sprintf(str_print, "%s", getSymbol(expr->type));
