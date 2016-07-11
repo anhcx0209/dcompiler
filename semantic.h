@@ -788,7 +788,7 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 
 			// only work with left is array and right is int
 			if ((left.type == _ARRAY || left.type == _STRING) && right.type == _INT) {				
-				st.dim_count = left.dim_count - 1;
+				st.dim_count = left.dim_count - 1;				
 				st.basic_type = left.basic_type;
 				st.type  = left.type;
 
@@ -806,48 +806,48 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			}
 
 			if (left.type != _ARRAY && left.type != _STRING) {
-				printf("Line %d: left expression must be array\n", expr->line);
+				printf("Line %d: wrong take postfix array\n", expr->line);
 			}
 
 			return st;
-		case _POSTFIX_ASS:
-			left = checkSemanticExpr(expr->left, var_table);
-			right = checkSemanticExpr(expr->right, var_table);
-			mid = checkSemanticExpr(expr->mid, var_table);
+		// case _POSTFIX_ASS:
+		// 	left = checkSemanticExpr(expr->left, var_table);
+		// 	right = checkSemanticExpr(expr->right, var_table);
+		// 	mid = checkSemanticExpr(expr->mid, var_table);
 
-			if (left.type == _UNKNOWN || right.type == _UNKNOWN || mid.type == _UNKNOWN) return st;
+		// 	if (left.type == _UNKNOWN || right.type == _UNKNOWN || mid.type == _UNKNOWN) return st;
 			
-			// only work with left is array and right is int
-			if ((left.type == _ARRAY || left.type == _STRING) && mid.type == _INT) {
-				st.dim_count = left.dim_count - 1;
-				st.basic_type = left.basic_type;
+		// 	// only work with left is array and right is int
+		// 	if ((left.type == _ARRAY || left.type == _STRING) && mid.type == _INT) {
+		// 		st.dim_count = left.dim_count - 1;
+		// 		st.basic_type = left.basic_type;
 
-				if (st.dim_count == 0) {
-					st.type = left.basic_type;
-					st.basic_type = _UNKNOWN;
-				} else
-					st.type = _ARRAY;
+		// 		if (st.dim_count == 0) {
+		// 			st.type = left.basic_type;
+		// 			st.basic_type = _UNKNOWN;
+		// 		} else
+		// 			st.type = _ARRAY;
 
-				if (!isEqualSemantic(st, right)) {
-					printf("Line %d: operand = require same type left and right\n", expr->line);
-					st.type = _UNKNOWN;
-					st.basic_type = _UNKNOWN;
-					st.dim_count = 0;
-					return  st;
-				}
+		// 		if (!isEqualSemantic(st, right)) {
+		// 			printf("Line %d: operand = require same type left and right\n", expr->line);
+		// 			st.type = _UNKNOWN;
+		// 			st.basic_type = _UNKNOWN;
+		// 			st.dim_count = 0;
+		// 			return  st;
+		// 		}
 
-				return st;
-			}
+		// 		return st;
+		// 	}
 
-			if (mid.type != _INT) {
-				printf("Line %d: array id must be int\n", expr->line);
-			}
+		// 	if (mid.type != _INT) {
+		// 		printf("Line %d: array id must be int\n", expr->line);
+		// 	}
 
-			if (left.type != _ARRAY && left.type != _STRING) {
-				printf("Line %d: left expression must be array\n", expr->line);
-			}
+		// 	if (left.type != _ARRAY && left.type != _STRING) {
+		// 		printf("Line %d: left expression must be array\n", expr->line);
+		// 	}
 
-			return st;
+		// 	return st;
 		case _FUNCALL:						
 			method = findMethod(expr->sval);
 

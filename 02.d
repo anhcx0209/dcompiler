@@ -4,7 +4,7 @@ int main() {
 
 	int[3][10] arr;
 	
-	arr[1][2] = 10;
+	arr[1] = 10;
 
 	return 1;
 }

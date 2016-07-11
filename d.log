@@ -21,9 +21,6 @@ Found a IDENTIFIER arr
 Found a token: [
 Found a INTEGER 1
 Found a token: ]
-Found a token: [
-Found a INTEGER 2
-Found a token: ]
 Found a token: =
 Found a INTEGER 10
 Found a token: ;
