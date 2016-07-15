@@ -21,6 +21,7 @@ void generateByteCode();
 struct ByteList *createByteList();
 
 struct ByteList* generateCodeConstTable();
+struct ByteList *generateCodeFieldTable();
 
 
 void appendByte(struct ByteList *list, uint8_t data);

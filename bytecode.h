@@ -5,7 +5,7 @@
 #include "bytecode_struct.h"
 
 void generateByteCode() {
-	FILE *output = fopen("d.class", "w");
+	FILE *output = fopen("DLang.class", "w");
 
 	main_code = createByteList();
 
@@ -19,10 +19,24 @@ void generateByteCode() {
 	struct ByteList* ct_code = generateCodeConstTable();
 	appendList(main_code, ct_code);
 
+	// ACCESS_FLAGS ACC_SUPER | ACC_PUBLIC
+	append2Bytes(main_code, 0x21);
 
+	// THIS_CLASS 
+	append2Bytes(main_code, (uint16_t) const_id.this_class);
+
+	// SUPER_CLASS
+	append2Bytes(main_code, (uint16_t) const_id.object_class);	
+
+	// INTERFACE_COUNT
+	append2Bytes(main_code, 0x0);
+
+	// FIELDS_COUNT AND FIELDS[FIELDS_COUNT]
+	struct ByteList *ft_code = generateCodeFieldTable();
+	appendList(main_code, ft_code);
 
 	// PRINT LIST
-	//fprintList(main_code, output);
+	fprintList(main_code, output);
 	//printList(main_code);
 
 	fclose(output);
@@ -80,6 +94,27 @@ struct ByteList* generateCodeConstTable() {
 				break;
 		}
 	}
+	return code;
+}
+
+struct ByteList *generateCodeFieldTable() {
+	struct ByteList* code = createByteList();
+
+	uint16_t cnt = (uint16_t) (semantic->field_table->size);
+	// 1 - in field for reading from console
+	append2Bytes(code, cnt + 1);	
+
+	for (struct VarTableConst* var = semantic->field_table->first; var != NULL; var = var->next){		
+		append2Bytes(code, 0x8); // access_flags = static
+		append2Bytes(code, (uint16_t)var->name_index);
+		append2Bytes(code, (uint16_t)var->desc_index);
+		append2Bytes(code, 0x0); // attributes_count
+	}
+	append2Bytes(code, 0x8);
+	append2Bytes(code, const_id.input_name);
+	append2Bytes(code, const_id.input_type);
+	append2Bytes(code, 0x0);
+
 	return code;
 }
 
