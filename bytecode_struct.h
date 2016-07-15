@@ -3,19 +3,16 @@
 
 #include <stdint.h>
 
-struct ByteElement{
+struct ByteElement {
 	uint8_t data;
 	struct ByteElement* next;
 };
 
-struct ByteList{
+struct ByteList {
 	struct ByteElement* first;
 	struct ByteElement* last;
 	int size;
 };
-
-
-
 
 // ----------------- GLOBAL VARIABLE -----------------------
 struct ByteList *main_code;
@@ -29,6 +26,7 @@ struct ByteList* generateCodeConstTable();
 void appendByte(struct ByteList *list, uint8_t data);
 void append2Bytes(struct ByteList *list, uint16_t data);
 void append4Bytes(struct ByteList *list, uint32_t data);
+void appendList(struct ByteList *list1, struct ByteList *list2);
 
 
 void fprintList(struct ByteList *list, FILE *pFile);

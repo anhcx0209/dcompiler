@@ -17,6 +17,9 @@ void generateByteCode() {
 	
 	// CONSTANT_POOL_COUNT AND CONSTANT_POOL [CONSTANT_POOL_COUNT - 1]	
 	struct ByteList* ct_code = generateCodeConstTable();
+	appendList(main_code, ct_code);
+
+
 
 	// PRINT LIST
 	//fprintList(main_code, output);
@@ -24,7 +27,6 @@ void generateByteCode() {
 
 	fclose(output);
 }
-
 
 struct ByteList* generateCodeConstTable() {
 	struct ByteList* code = createByteList();	
@@ -113,6 +115,12 @@ void append2Bytes(struct ByteList *list, uint16_t data) {
 void append4Bytes(struct ByteList *list, uint32_t data) {
 	append2Bytes(list, (uint16_t) ((data >> 16) & 0xFFFF));
 	append2Bytes(list, (uint16_t) (data & 0xFFFF));
+}
+
+void appendList(struct ByteList *list1, struct ByteList *list2)	{
+	if (list2 != NULL) 
+		for (struct ByteElement *e = list2->first; e != NULL; e = e->next) 
+			appendByte(list1, e->data);
 }
 
 void fprintList(struct ByteList *list, FILE *pFile) {
