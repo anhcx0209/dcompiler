@@ -5,6 +5,8 @@
 #include "bytecode_struct.h"
 
 void generateByteCode() {
+	FILE *output = fopen("d.class", "w");
+
 	main_code = createByteList();
 
 	// MAGIC NUMBER
@@ -12,17 +14,70 @@ void generateByteCode() {
 
 	// MINOR AND MAJOR VERSION 
 	append4Bytes(main_code, 0x0003002d);
+	
+	// CONSTANT_POOL_COUNT AND CONSTANT_POOL [CONSTANT_POOL_COUNT - 1]	
 	struct ByteList* ct_code = generateCodeConstTable();
 
-
 	// PRINT LIST
-	printList(main_code);
+	//fprintList(main_code, output);
+	//printList(main_code);
+
+	fclose(output);
 }
 
 
 struct ByteList* generateCodeConstTable() {
-	struct ByteList *code = createByteList();
-	// empty const table
+	struct ByteList* code = createByteList();	
+	// get number of constant and put to list
+	uint16_t cnt = (uint16_t) (semantic->const_table->size + 1);
+	append2Bytes(code, cnt);
+	uint16_t l;
+	uint32_t val;
+	int i;
+	// put every constant to list
+	for (struct SemanticConstant* c = semantic->const_table->first; c != NULL; c = c->next) {
+		switch (c->type) {
+			case CONSTANT_Utf8:
+				appendByte(code, 0x1);
+				l = (uint16_t)strlen(c->utf8_val);
+				append2Bytes(code, l);
+				for (i = 0; i < l; i++)
+					appendByte(code, (uint8_t)c->utf8_val[i]);
+				break;
+			case CONSTANT_Integer:
+				appendByte(code, 0x3);
+				append4Bytes(code, (uint32_t)c->int_val);
+				break;
+			case CONSTANT_Float:
+				appendByte(code, 0x4);
+				val = *(uint32_t*)&(c->float_val);
+				append4Bytes(code, val);	
+				break;
+			case CONSTANT_Class:
+				appendByte(code, 0x7);
+				append2Bytes(code, (uint16_t)c->link1);	
+				break;			
+			case CONSTANT_String:
+				appendByte(code, 0x8);
+				append2Bytes(code, (uint16_t)c->link1);	
+				break;
+			case CONSTANT_Fieldref:
+				appendByte(code, 0x9);
+				append2Bytes(code, (uint16_t)c->link1);	
+				append2Bytes(code, (uint16_t)c->link2);	
+				break;
+			case CONSTANT_Methodref:
+				appendByte(code, 0xA);
+				append2Bytes(code, (uint16_t)c->link1);	
+				append2Bytes(code, (uint16_t)c->link2);	
+				break;
+			case CONSTANT_NameAndType:
+				appendByte(code, 0xC);
+				append2Bytes(code, (uint16_t)c->link1);	
+				append2Bytes(code, (uint16_t)c->link2);	
+				break;
+		}
+	}
 	return code;
 }
 

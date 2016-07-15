@@ -335,9 +335,8 @@ int main(int argc, char *argv[])
 		printf("Compiling unsuccessfully...\n");
 	}
 	
-	//generateByteCode();
+	generateByteCode();
 
-	
 	fclose(log_file);
     return 0;
 }
