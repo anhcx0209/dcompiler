@@ -31,7 +31,7 @@ void main() {
 		dosomething1(x, y, z);
 	}
 
-	/* block */
+	///* block */
 	i = 15;
 	while (i <= 1) {
 		x++;

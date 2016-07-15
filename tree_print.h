@@ -396,6 +396,13 @@ void printExpr(int id, struct Expression *expr) {
 			printExpr(rightid, expr->right);
 
 			break;
+		case _READLN:
+		case _WRITELN:
+			leftid = ++cur_id;			
+			printEdge(id, leftid);
+			printExpr(leftid, expr->left);
+			
+			break;
 		default:
 			sprintf(str_print, "%s", getSymbol(expr->type));
 			strcat(str_print, "(");
@@ -403,11 +410,12 @@ void printExpr(int id, struct Expression *expr) {
 			strcat(str_print, ")");
 			printNode(id, str_print);
 
-			// print right 
+			// print left
 			leftid = ++cur_id;			
 			printEdge(id, leftid);
 			printExpr(leftid, expr->left);
-			// print left
+
+			// print right
 			int rightid = ++cur_id;
 			printEdge(id, rightid);
 			printExpr(rightid, expr->right);

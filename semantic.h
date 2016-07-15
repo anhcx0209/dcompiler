@@ -900,7 +900,7 @@ struct SemanticType checkSemanticExpr(struct Expression * expr, struct VarTable 
 			st.basic_type = method->return_type.basic_type;
 			expr->semantic_type = st;
 			return st;
-		case _READLN:
+		case _READLN:			
 		case _WRITELN:			
 			left = checkSemanticExpr(expr->left, var_table);
 			if (left.type == _ARRAY) {

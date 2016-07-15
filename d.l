@@ -320,11 +320,12 @@ FS				(f|F|L)
 
 int main(int argc, char *argv[])
 {
-	yyin=fopen("02.d","r");
+	yyin=fopen("01.d","r");
 
 	// scanner	
 	printf("Compiling...\n");
 	log_file = fopen("d.log", "w");
+
 	yyparse();    
 
 	if (doSemantic(prog)) {
